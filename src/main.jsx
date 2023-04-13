@@ -9,6 +9,7 @@ import {
 
 import App from './App'
 import ViewRecipe from './pages/viewRecipe';
+import CreateRecipe from './pages/createRecipe';
 import EditRecipe from './pages/editRecipe';
 
 const router = createBrowserRouter([
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
   {
     path: '/recipes/:slug',
     element: <ViewRecipe />,
+  },
+  {
+    path: '/recipes/create',
+    element: <CreateRecipe />,
   },
   {
     path: '/recipes/edit/:slug',

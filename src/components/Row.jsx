@@ -12,21 +12,28 @@ import { Link } from "react-router-dom";
 
 import { useState, useEffect } from "react";
 
-const Row = ({ data, onClick }) => {
+const Row = ({ data, onClick, onDelete }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setIsLoading(false);
   }, []);
 
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return isLoading ? (
     <TableRow>
-        <TableCell colSpan={7}>
+      <TableCell colSpan={7}>
         <div className="loading-skeleton">
-      <Skeleton/>
-    </div>
-        </TableCell>
-
+          <Skeleton />
+        </div>
+      </TableCell>
     </TableRow>
   ) : (
     <TableRow
@@ -57,6 +64,7 @@ const Row = ({ data, onClick }) => {
           <button
             className="text-slate-500 text-xs"
             onClick={() => onClick(data.slug)}
+            // onClick={() => setOpenDialog(data.slug)}
           >
             View more
           </button>
@@ -77,7 +85,7 @@ const Row = ({ data, onClick }) => {
               <ViewIcon color="blue" size={18} />
             </IconButton>
           </Link>
-          <IconButton>
+          <IconButton onClick={() => onDelete(data.slug)}>
             <DeleteIcon color="blue" size={18} />
           </IconButton>
         </div>

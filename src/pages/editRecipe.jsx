@@ -1,20 +1,33 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 
-import { IconButton, OutlinedInput } from "@mui/material";
+import { IconButton } from "@mui/material";
 import axios from "axios";
 
 import Loader from "../components/Loader";
-import { HiPlus as AddIcon, HiTrash as DeleteIcon } from "react-icons/hi";
+import { HiPlus as AddIcon, HiX as DeleteIcon } from "react-icons/hi";
+
 import InputField from "../components/InputField";
 
 const API_BASE_URL = "http://localhost:3000/recipes";
 
 const EditRecipe = () => {
+  const navigate = useNavigate();
   const { slug } = useParams();
+
   const [selectedRecipe, setSelectedRecipe] = useState(null);
+
+  const [isHovered, setHovered] = useState(false);
+
+  // const handleEnter = (index) => {
+  //   setHovered(index);
+  // };
+
+  // const handleLeave = () => {
+  //   setHovered(-1);
+  // };
 
   const fetchRecipe = async () => {
     try {
@@ -26,14 +39,21 @@ const EditRecipe = () => {
     }
   };
 
-  const updateRecipe = async (slug) => {
+  const updateRecipe = async (data) => {
+    const updatedRecipe = {
+      recipe_name: data.recipeName,
+      desc: data.desc,
+      directions: data.directions.map((direction) => direction.direction),
+      prep_time: data.prepTime,
+      cooking_time: data.cookTime,
+      serving: data.serving,
+    };
     try {
       const result = await axios.patch(
         `${API_BASE_URL}/${slug}/update`,
-        recipes
+        updatedRecipe
       );
-      console.log(result.data);
-      fetchRecipe();
+      navigate(`/recipes/edit/${result.data.slug}`);
     } catch (error) {
       console.error(error);
     }
@@ -53,7 +73,6 @@ const EditRecipe = () => {
       prepTime: selectedRecipe ? selectedRecipe.prep_time : "",
       cookTime: selectedRecipe ? selectedRecipe.cooking_time : "",
       serving: selectedRecipe ? selectedRecipe.serving : "",
-      slug: selectedRecipe ? selectedRecipe.slug : "",
     },
   });
 
@@ -62,10 +81,16 @@ const EditRecipe = () => {
     name: "directions",
   });
 
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = (data) => {
+    try {
+      updateRecipe(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
-    <div className="">
+    <div className="max-w-7xl mx-auto">
       {selectedRecipe ? (
         <div>
           <form
@@ -91,18 +116,13 @@ const EditRecipe = () => {
                   field={field}
                   placeholder="Description"
                   size="small"
-                  multiline="multiline"
+                  multiline={true}
                   rows="3"
                 />
               )}
             />
             <div className="space-y-2 w-[50%]">
-              <div className="flex justify-between items-center">
-                <div>Directions</div>
-                <IconButton onClick={() => append({ direction: "" })}>
-                  <AddIcon size={18} color="blue" />
-                </IconButton>
-              </div>
+              <div>Directions</div>
               {fields.map((field, index) => (
                 <div className="flex gap-2 items-center" key={field.id}>
                   <Controller
@@ -112,18 +132,25 @@ const EditRecipe = () => {
                     render={({ field }) => (
                       <InputField
                         field={field}
-                        sx={{ width: "100%" }}
+                        // sx={{ width: "100%" }}
                         placeholder={`Item ${index + 1}`}
                         size="small"
-                        multiline="multiline"
+                        multiline={true}
+                        // enter={() => handleEnter(index)}
+                        // leave={() => handleLeave()}
                       />
                     )}
                   />
+                  {/* {isHovered === index && ( */}
                   <IconButton onClick={() => remove(index)}>
-                    <DeleteIcon size={18} color="red" />
+                    <DeleteIcon size={18} color="blue" />
                   </IconButton>
+                  {/* )} */}
                 </div>
               ))}
+              <IconButton onClick={() => append({ direction: "" })}>
+                <AddIcon size={18} color="blue" />
+              </IconButton>
             </div>
             <Controller
               name="prepTime"
@@ -154,19 +181,7 @@ const EditRecipe = () => {
                 <InputField field={field} placeholder="Serving" size="small" />
               )}
             />
-            <Controller
-              name="slug"
-              control={control}
-              render={({ field }) => (
-                <InputField
-                  disabled
-                  field={field}
-                  placeholder="Slug"
-                  size="small"
-                />
-              )}
-            />
-            <button type="submit">Submit</button>
+            <button type="submit">Update</button>
             <Link to={"/"}>
               <button className="w-full" type="button">
                 Cancel

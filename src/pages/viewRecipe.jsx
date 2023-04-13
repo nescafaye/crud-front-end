@@ -26,7 +26,7 @@ const ViewRecipe = () => {
   }, [slug]);
 
   return (
-    <div>
+    <div className="bg-[#040410] text-white h-screen">
       {selectedRecipe ? (
         <div>
           <div>{selectedRecipe.recipe_name}</div>

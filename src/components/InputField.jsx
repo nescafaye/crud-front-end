@@ -2,7 +2,7 @@ import React from "react";
 import { OutlinedInput } from "@mui/material";
 
 const InputField = (props) => {
-  const { field, placeholder, index, size, rows, type, sx, multiline, disabled } = props;
+  const { field, placeholder, index, size, rows, type, sx, multiline, disabled, enter, leave } = props;
   return (
     <OutlinedInput
       {...field}
@@ -10,7 +10,9 @@ const InputField = (props) => {
       size={size}
       rows={rows}
       type={type}
-      sx={sx}
+      sx={{bgcolor: "#191925", color: "whitesmoke", width: "100%"}}
+      onMouseEnter={enter}
+      onMouseLeave={leave}
       multiline={multiline}
       disabled={disabled}
     />
