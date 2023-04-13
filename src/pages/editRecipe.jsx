@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 
-import { Button, OutlinedInput } from "@mui/material";
+import { IconButton, OutlinedInput } from "@mui/material";
 import axios from "axios";
 
 import Loader from "../components/Loader";
-import Recipes from "./recipes";
+import { HiPlus as AddIcon, HiTrash as DeleteIcon } from "react-icons/hi";
+import InputField from "../components/InputField";
 
 const API_BASE_URL = "http://localhost:3000/recipes";
 
@@ -15,17 +16,30 @@ const EditRecipe = () => {
   const { slug } = useParams();
   const [selectedRecipe, setSelectedRecipe] = useState(null);
 
-  useEffect(() => {
-    const fetchRecipe = async () => {
-      try {
-        const response = await axios.get(`${API_BASE_URL}/${slug}`);
-        console.log(response.data);
-        setSelectedRecipe(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  const fetchRecipe = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/${slug}`);
+      console.log(response.data);
+      setSelectedRecipe(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  const updateRecipe = async (slug) => {
+    try {
+      const result = await axios.patch(
+        `${API_BASE_URL}/${slug}/update`,
+        recipes
+      );
+      console.log(result.data);
+      fetchRecipe();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
     fetchRecipe();
   }, [slug]);
 
@@ -36,22 +50,22 @@ const EditRecipe = () => {
       directions: selectedRecipe
         ? selectedRecipe.directions.map((direction) => ({ direction }))
         : [{ direction: "" }],
-        
       prepTime: selectedRecipe ? selectedRecipe.prep_time : "",
       cookTime: selectedRecipe ? selectedRecipe.cooking_time : "",
       serving: selectedRecipe ? selectedRecipe.serving : "",
+      slug: selectedRecipe ? selectedRecipe.slug : "",
     },
   });
 
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "directionsArray",
+    name: "directions",
   });
 
   const onSubmit = (data) => console.log(data);
 
   return (
-    <div>
+    <div className="">
       {selectedRecipe ? (
         <div>
           <form
@@ -62,8 +76,8 @@ const EditRecipe = () => {
               name="recipeName"
               control={control}
               render={({ field }) => (
-                <OutlinedInput
-                  {...field}
+                <InputField
+                  field={field}
                   placeholder="Recipe Name"
                   size="small"
                 />
@@ -73,48 +87,52 @@ const EditRecipe = () => {
               name="desc"
               control={control}
               render={({ field }) => (
-                <OutlinedInput
-                  {...field}
+                <InputField
+                  field={field}
                   placeholder="Description"
                   size="small"
-                  multiline
-                  rows={3}
-                  variant="filled"
+                  multiline="multiline"
+                  rows="3"
                 />
               )}
             />
-            {selectedRecipe.directions.map((field, index) => (
-              <div key={field.id}>
-                <Controller
-                  name="directions"
-                  control={control}
-                  defaultValue={field.direction}
-                  render={({ field }) => (
-                    <OutlinedInput
-                      {...field}
-                      placeholder="Directions"
-                      size="small"
-                      multiline
-                      rows={2}
-                      variant="filled"
-                    />
-                  )}
-                />
-
-                <button type="button" onClick={() => remove(index)}>
-                  Remove
-                </button>
+            <div className="space-y-2 w-[50%]">
+              <div className="flex justify-between items-center">
+                <div>Directions</div>
+                <IconButton onClick={() => append({ direction: "" })}>
+                  <AddIcon size={18} color="blue" />
+                </IconButton>
               </div>
-            ))}
+              {fields.map((field, index) => (
+                <div className="flex gap-2 items-center" key={field.id}>
+                  <Controller
+                    name={`directions[${index}].direction`}
+                    control={control}
+                    defaultValue={field.direction}
+                    render={({ field }) => (
+                      <InputField
+                        field={field}
+                        sx={{ width: "100%" }}
+                        placeholder={`Item ${index + 1}`}
+                        size="small"
+                        multiline="multiline"
+                      />
+                    )}
+                  />
+                  <IconButton onClick={() => remove(index)}>
+                    <DeleteIcon size={18} color="red" />
+                  </IconButton>
+                </div>
+              ))}
+            </div>
             <Controller
               name="prepTime"
               control={control}
               render={({ field }) => (
-                <OutlinedInput
-                  {...field}
+                <InputField
+                  field={field}
                   placeholder="Prep Time"
                   size="small"
-                  type="number"
                 />
               )}
             />
@@ -122,11 +140,10 @@ const EditRecipe = () => {
               name="cookTime"
               control={control}
               render={({ field }) => (
-                <OutlinedInput
-                  {...field}
-                  placeholder="Cook Time"
+                <InputField
+                  field={field}
+                  placeholder="Prep Time"
                   size="small"
-                  type="number"
                 />
               )}
             />
@@ -134,18 +151,25 @@ const EditRecipe = () => {
               name="serving"
               control={control}
               render={({ field }) => (
-                <OutlinedInput
-                  {...field}
-                  placeholder="Serving"
+                <InputField field={field} placeholder="Serving" size="small" />
+              )}
+            />
+            <Controller
+              name="slug"
+              control={control}
+              render={({ field }) => (
+                <InputField
+                  disabled
+                  field={field}
+                  placeholder="Slug"
                   size="small"
-                  type="number"
                 />
               )}
             />
             <button type="submit">Submit</button>
             <Link to={"/"}>
               <button className="w-full" type="button">
-                Back
+                Cancel
               </button>
             </Link>
           </form>

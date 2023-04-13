@@ -6,27 +6,15 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import {
-  Button,
-  IconButton,
-  TextField,
-  InputAdornment,
-  Modal,
-} from "@mui/material";
-
-import {
-  HiPlus as AddIcon,
-  HiPencilAlt as EditIcon,
-  HiEye as ViewIcon,
-  HiTrash as DeleteIcon,
-  HiSearch as SearchIcon,
-} from "react-icons/hi";
-
-import { Link } from "react-router-dom";
+import { IconButton } from "@mui/material";
+import { HiPlus as AddIcon } from "react-icons/hi";
 
 import { useEffect, useState } from "react";
+
 import axios from "axios";
 import Loader from "../components/Loader";
+import Search from "../components/Search";
+import Row from "../components/Row";
 
 const API_BASE_URL = "http://localhost:3000/recipes";
 
@@ -41,14 +29,15 @@ const Recipes = () => {
     setRecipes(result.data);
   };
 
-  useEffect(() => {
-    getRecipe();
-  }, []);
-
   const getRecipeBySlug = async (slug) => {
     const result = await axios.get(`${API_BASE_URL}/${slug}`);
     setSelectedRecipe(result.data); // set the selected recipe in state
   };
+
+  useEffect(() => {
+    getRecipe();
+  }, []);
+
 
   // const updateRecipe = async (slug) => {
   //   try {
@@ -69,49 +58,11 @@ const Recipes = () => {
 
   return (
     <>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
         <div className="flex justify-between items-center mb-5">
           <h1 className="text-2xl font-bold">Recipes</h1>
           <div className="flex items-center space-x-2">
-            <TextField
-              id="search-bar"
-              className="inputRounded"
-              variant="outlined"
-              placeholder="Search..."
-              size="small"
-              sx={{
-                // make this reusable
-                backgroundColor: "#191925",
-                borderRadius: "10px",
-                borderWidth: "0.5px",
-                fontSize: "12px",
-                "& .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#424248",
-                },
-                "&:hover:not(.Mui-disabled)": {
-                  backgroundColor: "#050514",
-                  transition: "all",
-                  transitionDuration: "0.3s",
-                },
-                "&:hover:not(.Mui-disabled) .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#424248",
-                },
-                "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#424248",
-                },
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon style={{ fill: "blue", fontSize: 18 }} />
-                  </InputAdornment>
-                ),
-                style: {
-                  fontSize: 15,
-                  color: "white"
-                },
-              }}
-            />
+            <Search/>
             <IconButton>
               <AddIcon color="blue" size={19} />
             </IconButton>
@@ -136,67 +87,15 @@ const Recipes = () => {
             <TableBody>
               {recipes && recipes.length > 0 ? (
                 recipes.map((recipe) => (
-                  <TableRow
-                    key={recipe.id}
-                    sx={{
-                      "th, td": { color: "#d7d7db" },
-                      "&:last-child td, &:last-child th": { border: 0 },
-                    }}
-                  >
-                    <TableCell component="th" scope="row">
-                      {recipe.recipe_name}
-                    </TableCell>
-                    <TableCell align="left">{recipe.desc}</TableCell>
-                    <TableCell align="left">
-                      {recipe.directions
-                        .slice(0, (recipe.directions.length = 1))
-                        .map((direction, index) => {
-                          const itemNo = index + 1;
-                          return (
-                            <ol key={itemNo}>
-                              <li>
-                                {itemNo}. {direction}
-                              </li>
-                            </ol>
-                          );
-                        })}
-                      {recipe.directions.length > 0 && (
-                        <button
-                          className="text-slate-500 text-xs"
-                          onClick={() => getRecipeBySlug(recipe.slug)}
-                        >
-                          View more
-                        </button>
-                      )}
-                    </TableCell>
-                    <TableCell align="left">{recipe.prep_time}</TableCell>
-                    <TableCell align="left">{recipe.cooking_time}</TableCell>
-                    <TableCell align="left">{recipe.serving}</TableCell>
-                    <TableCell align="left">
-                      <div className="inline-flex">
-                        <Link to={`/recipes/edit/${recipe.slug}`}>
-                          <IconButton>
-                            <EditIcon color="blue" size={18} />
-                          </IconButton>
-                        </Link>
-                        <Link to={`/recipes/${recipe.slug}`}>
-                          <IconButton>
-                            <ViewIcon color="blue" size={18} />
-                          </IconButton>
-                        </Link>
-                        <IconButton>
-                          <DeleteIcon color="blue" size={18} />
-                        </IconButton>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                  <Row key={recipe.id} data={recipe} onClick={getRecipeBySlug}/>
                 ))
               ) : (
-                <TableRow>
-                  <TableCell colSpan={7} align="center">
-                    <Loader />
-                  </TableCell>
-                </TableRow>
+                // <TableRow>
+                //   <TableCell colSpan={7} align="center">
+                //     <Loader />
+                //   </TableCell>
+                // </TableRow>
+                ""
               )}
             </TableBody>
           </Table>
