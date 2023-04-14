@@ -48,6 +48,20 @@ const Row = ({ data, onClick, onDelete }) => {
       </TableCell>
       <TableCell align="left">{data.desc}</TableCell>
       <TableCell align="left">
+        {data.ingredients
+          .slice(0, (data.ingredients.length = 1))
+          .map((ingredient, index) => {
+            const itemNo = index + 1;
+            const isLast = itemNo === data.ingredients.length;
+            return (
+              <div>
+                {ingredient}
+                {isLast ? "" : ","}
+              </div>
+            );
+          })}
+      </TableCell>
+      <TableCell align="left">
         {data.directions
           .slice(0, (data.directions.length = 1))
           .map((direction, index) => {

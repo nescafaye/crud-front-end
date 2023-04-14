@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 
-import { IconButton } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import axios from "axios";
 import slugify from "slugify";
 
@@ -11,7 +11,7 @@ import { HiPlus as AddIcon, HiX as DeleteIcon } from "react-icons/hi";
 
 import InputField from "../components/InputField";
 
-const API_BASE_URL = "http://localhost:3000/recipes";
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const CreateRecipe = () => {
   const navigate = useNavigate();
@@ -19,6 +19,7 @@ const CreateRecipe = () => {
     defaultValues: {
       recipeName: "",
       desc: "",
+      ingredients: [],
       directions: [{ direction: "" }],
       prepTime: "",
       cookTime: "",
@@ -37,6 +38,9 @@ const CreateRecipe = () => {
       const newRecipe = {
         recipeName: data.recipeName,
         desc: data.desc,
+        ingredients: data.ingredients
+          .split(",")
+          .map((ingredient) => ingredient.trim()),
         directions: data.directions.map((direction) => direction.direction),
         prepTime: data.prepTime,
         cookingTime: data.cookTime,
@@ -60,9 +64,14 @@ const CreateRecipe = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div>
-        <form className="flex flex-col gap-5" onSubmit={handleSubmit(onSubmit)}>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-12">
+      <div className="mb-12 text-xl font-semibold">Create Recipe</div>
+      <form
+        className="flex flex-col lg:flex-row flex-wrap gap-4"
+        onSubmit={handleSubmit(onSubmit)}
+      >
+        <div className="flex-1 space-y-2">
+          <div>Recipe Name</div>
           <Controller
             name="recipeName"
             control={control}
@@ -70,10 +79,11 @@ const CreateRecipe = () => {
               <InputField
                 field={field}
                 placeholder="Recipe Name"
-                size="small"
+                size="regular"
               />
             )}
           />
+          <div>Description</div>
           <Controller
             name="desc"
             control={control}
@@ -81,13 +91,63 @@ const CreateRecipe = () => {
               <InputField
                 field={field}
                 placeholder="Description"
-                size="small"
+                size="regular"
                 multiline={true}
-                rows="3"
+                rows={5}
               />
             )}
           />
-          <div className="space-y-2 w-[50%]">
+          <div>Prep Time</div>
+          <Controller
+            name="prepTime"
+            control={control}
+            render={({ field }) => (
+              <InputField
+                field={field}
+                placeholder="Prep Time"
+                size="regular"
+              />
+            )}
+          />
+        </div>
+        <div className="flex-1 space-y-2">
+          <div>Ingredients</div>
+          <Controller
+            name="ingredients"
+            control={control}
+            render={({ field }) => (
+              <InputField
+                field={field}
+                placeholder="Ingredients (comma-separated)"
+                size="regular"
+                multiline={true}
+                rows={5}
+              />
+            )}
+          />
+          <div>Cook Time</div>
+          <Controller
+            name="cookTime"
+            control={control}
+            render={({ field }) => (
+              <InputField
+                field={field}
+                placeholder="Cook Time"
+                size="regular"
+              />
+            )}
+          />
+          <div>Serving</div>
+          <Controller
+            name="serving"
+            control={control}
+            render={({ field }) => (
+              <InputField field={field} placeholder="Serving" size="regular" />
+            )}
+          />
+        </div>
+        <div className="w-full">
+          <div className="space-y-2">
             <div>Directions</div>
             {fields.map((field, index) => (
               <div className="flex gap-2 items-center" key={field.id}>
@@ -100,53 +160,30 @@ const CreateRecipe = () => {
                       field={field}
                       // sx={{ width: "100%" }}
                       placeholder={`Item ${index + 1}`}
-                      size="small"
+                      size="regular"
                       multiline={true}
-                      // enter={() => handleEnter(index)}
-                      // leave={() => handleLeave()}
                     />
                   )}
                 />
-                {/* {isHovered === index && ( */}
                 <IconButton onClick={() => remove(index)}>
                   <DeleteIcon size={18} color="blue" />
                 </IconButton>
-                {/* )} */}
               </div>
             ))}
             <IconButton onClick={() => append({ direction: "" })}>
               <AddIcon size={18} color="blue" />
             </IconButton>
           </div>
-          <Controller
-            name="prepTime"
-            control={control}
-            render={({ field }) => (
-              <InputField field={field} placeholder="Prep Time" size="small" />
-            )}
-          />
-          <Controller
-            name="cookTime"
-            control={control}
-            render={({ field }) => (
-              <InputField field={field} placeholder="Prep Time" size="small" />
-            )}
-          />
-          <Controller
-            name="serving"
-            control={control}
-            render={({ field }) => (
-              <InputField field={field} placeholder="Serving" size="small" />
-            )}
-          />
-          <button type="submit">Create</button>
+          <Button type="submit" sx={{ width: "100%" }} size="regular">
+            Create
+          </Button>
           <Link to={"/"}>
-            <button className="w-full" type="button">
+            <Button sx={{ width: "100%" }} color="error" size="regular">
               Cancel
-            </button>
+            </Button>
           </Link>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 };

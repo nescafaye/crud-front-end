@@ -23,13 +23,13 @@ import { Link } from "react-router-dom";
 import Search from "../components/Search";
 import Row from "../components/Row";
 
-const API_BASE_URL = "http://localhost:3000/recipes";
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const Recipes = () => {
   const [recipes, setRecipes] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
-  const [openConfirmDelete, setConfirmDelete] = useState(false);
+  const [openConfirmDelete, setOpenConfirmDelete] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -44,33 +44,19 @@ const Recipes = () => {
     setOpenDialog(true);
   };
 
-  const confirmDelete = async (slug) => {
+  const deleteRecipe = async (slug) => {
     try {
-      getRecipeBySlug(slug);
-      // await axios.delete(`${API_BASE_URL}/${slug}/delete`);
-      // setRecipes(recipes.filter((recipe) => recipe.slug !== slug));
+      await axios.delete(`${API_BASE_URL}/${slug}/delete`);
+      setRecipes(
+        recipes.filter((recipe) => recipe.slug !== selectedRecipe.slug)
+      );
     } catch (error) {
       console.error(error);
+    } finally {
+      setSelectedRecipe(null);
+      setOpenDialog(false);
     }
   };
-
-  const deleteRecipe = async (slug) => {
-      try {
-        await axios.delete(
-          `${API_BASE_URL}/${slug}/delete`
-        );
-        setRecipes(
-          recipes.filter(
-            (recipe) => recipe.slug !== selectedRecipe.slug
-          )
-        );
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setSelectedRecipe(null);
-        setOpenDialog(false);
-    }
-  }
 
   useEffect(() => {
     getRecipe();
@@ -78,7 +64,7 @@ const Recipes = () => {
 
   return (
     <>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5 pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 pb-12">
         <div className="flex justify-between items-center mb-5">
           <h1 className="text-2xl font-bold">Recipes</h1>
           <div className="flex items-center space-x-2">
@@ -103,6 +89,7 @@ const Recipes = () => {
               <TableRow sx={{ th: { fontWeight: "bold", color: "white" } }}>
                 <TableCell>Recipe Name</TableCell>
                 <TableCell align="left">Description</TableCell>
+                <TableCell align="left">Ingredients</TableCell>
                 <TableCell align="left">Directions</TableCell>
                 <TableCell align="left">Prep Time</TableCell>
                 <TableCell align="left">Cook Time</TableCell>
@@ -117,14 +104,13 @@ const Recipes = () => {
                       key={recipe.id}
                       data={recipe}
                       onClick={getRecipeBySlug}
-                      onDelete={confirmDelete}
+                      onDelete={() => {
+                        setSelectedRecipe(recipe);
+                        setOpenConfirmDelete(true);
+                      }}
                     />
                   ))
-                : // <TableRow>
-                  //   <TableCell colSpan={7} align="center">
-                  //     <Loader />
-                  //   </TableCell>
-                  // </TableRow>
+                : 
                   ""}
             </TableBody>
           </Table>
@@ -159,7 +145,7 @@ const Recipes = () => {
 
             <Dialog
               open={openConfirmDelete}
-              onClose={() => setConfirmDelete(false)}
+              onClose={() => setOpenConfirmDelete(false)}
               PaperProps={{
                 style: {
                   backgroundColor: "#191925",
@@ -171,15 +157,19 @@ const Recipes = () => {
               <DialogContent>
                 <p>
                   Are you sure you want to delete the recipe "
-                  {selectedRecipe?.recipe_name}"?
+                  {selectedRecipe.recipe_name}"?
                 </p>
               </DialogContent>
               <DialogActions>
-                <Button onClick={() => setConfirmDelete(false)}>Cancel</Button>
+                <Button onClick={() => setOpenConfirmDelete(false)}>
+                  Cancel
+                </Button>
                 <Button
-                  onClick={deleteRecipe(selectedRecipe?.recipe_name)}
+                  onClick={() => {
+                    setOpenConfirmDelete(false);
+                    deleteRecipe(selectedRecipe.slug);
+                  }}
                   color="error"
-                  variant="contained"
                 >
                   Delete
                 </Button>

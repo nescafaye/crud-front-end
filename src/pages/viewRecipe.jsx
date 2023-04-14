@@ -5,7 +5,7 @@ import { Player } from "@lottiefiles/react-lottie-player";
 import axios from "axios";
 import Loader from "../components/Loader";
 
-const API_BASE_URL = "http://localhost:3000/recipes";
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const ViewRecipe = () => {
   const { slug } = useParams();
@@ -31,6 +31,7 @@ const ViewRecipe = () => {
         <div>
           <div>{selectedRecipe.recipe_name}</div>
           <div>{selectedRecipe.desc}</div>
+          <div>{selectedRecipe.ingredients}</div>
           <div>{selectedRecipe.directions}</div>
           <div>{selectedRecipe.prep_time}</div>
           <div>{selectedRecipe.cooking_time}</div>

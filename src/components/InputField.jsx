@@ -10,7 +10,7 @@ const InputField = (props) => {
       size={size}
       rows={rows}
       type={type}
-      sx={{bgcolor: "#191925", color: "whitesmoke", width: "100%"}}
+      sx={{bgcolor: "#191925",  color: "whitesmoke", width: "100%", borderRadius: "10px",}}
       onMouseEnter={enter}
       onMouseLeave={leave}
       multiline={multiline}

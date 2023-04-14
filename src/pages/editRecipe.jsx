@@ -3,31 +3,30 @@ import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 
-import { IconButton } from "@mui/material";
+import { IconButton, Button } from "@mui/material";
 import axios from "axios";
 
 import Loader from "../components/Loader";
 import { HiPlus as AddIcon, HiX as DeleteIcon } from "react-icons/hi";
 
 import InputField from "../components/InputField";
+import CustomSnackbar from "../components/CustomSnackbar";
 
-const API_BASE_URL = "http://localhost:3000/recipes";
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const EditRecipe = () => {
   const navigate = useNavigate();
   const { slug } = useParams();
 
   const [selectedRecipe, setSelectedRecipe] = useState(null);
+  const [open, setOpen] = useState(false);
 
-  const [isHovered, setHovered] = useState(false);
-
-  // const handleEnter = (index) => {
-  //   setHovered(index);
-  // };
-
-  // const handleLeave = () => {
-  //   setHovered(-1);
-  // };
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
 
   const fetchRecipe = async () => {
     try {
@@ -43,6 +42,7 @@ const EditRecipe = () => {
     const updatedRecipe = {
       recipe_name: data.recipeName,
       desc: data.desc,
+      ingredients: data.ingredients.split(","),
       directions: data.directions.map((direction) => direction.direction),
       prep_time: data.prepTime,
       cooking_time: data.cookTime,
@@ -54,6 +54,7 @@ const EditRecipe = () => {
         updatedRecipe
       );
       navigate(`/recipes/edit/${result.data.slug}`);
+      setOpen(true);
     } catch (error) {
       console.error(error);
     }
@@ -67,6 +68,7 @@ const EditRecipe = () => {
     values: {
       recipeName: selectedRecipe ? selectedRecipe.recipe_name : "",
       desc: selectedRecipe ? selectedRecipe.desc : "",
+      ingredients: selectedRecipe ? selectedRecipe.ingredients.join(",") : "",
       directions: selectedRecipe
         ? selectedRecipe.directions.map((direction) => ({ direction }))
         : [{ direction: "" }],
@@ -90,111 +92,148 @@ const EditRecipe = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
-      {selectedRecipe ? (
-        <div>
-          <form
-            className="flex flex-col gap-5"
-            onSubmit={handleSubmit(onSubmit)}
-          >
-            <Controller
-              name="recipeName"
-              control={control}
-              render={({ field }) => (
-                <InputField
-                  field={field}
-                  placeholder="Recipe Name"
-                  size="small"
+    <>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-12">
+        <div className="mb-12 text-xl font-semibold">Edit Recipe</div>
+        {selectedRecipe ? (
+          <div>
+            <form
+              className="flex flex-col lg:flex-row flex-wrap gap-4"
+              onSubmit={handleSubmit(onSubmit)}
+            >
+              <div className="flex-1 space-y-2">
+                <div>Recipe Name</div>
+                <Controller
+                  name="recipeName"
+                  control={control}
+                  render={({ field }) => (
+                    <InputField
+                      field={field}
+                      placeholder="Recipe Name"
+                      size="regular"
+                    />
+                  )}
                 />
-              )}
-            />
-            <Controller
-              name="desc"
-              control={control}
-              render={({ field }) => (
-                <InputField
-                  field={field}
-                  placeholder="Description"
-                  size="small"
-                  multiline={true}
-                  rows="3"
+                <div>Description</div>
+                <Controller
+                  name="desc"
+                  control={control}
+                  render={({ field }) => (
+                    <InputField
+                      field={field}
+                      placeholder="Description"
+                      size="regular"
+                      multiline={true}
+                      rows={5}
+                    />
+                  )}
                 />
-              )}
-            />
-            <div className="space-y-2 w-[50%]">
-              <div>Directions</div>
-              {fields.map((field, index) => (
-                <div className="flex gap-2 items-center" key={field.id}>
-                  <Controller
-                    name={`directions[${index}].direction`}
-                    control={control}
-                    defaultValue={field.direction}
-                    render={({ field }) => (
-                      <InputField
-                        field={field}
-                        // sx={{ width: "100%" }}
-                        placeholder={`Item ${index + 1}`}
-                        size="small"
-                        multiline={true}
-                        // enter={() => handleEnter(index)}
-                        // leave={() => handleLeave()}
+                <div>Prep Time</div>
+                <Controller
+                  name="prepTime"
+                  control={control}
+                  render={({ field }) => (
+                    <InputField
+                      field={field}
+                      placeholder="Prep Time"
+                      size="regular"
+                    />
+                  )}
+                />
+              </div>
+              <div className="flex-1 space-y-2">
+              <div>Ingredients</div>
+                <Controller
+                  name="ingredients"
+                  control={control}
+                  render={({ field }) => (
+                    <InputField
+                      field={field}
+                      placeholder="Ingredients (comma-separated)"
+                      size="regular"
+                      multiline={true}
+                      rows={5}
+                    />
+                  )}
+                />
+                <div>Cook Time</div>
+                <Controller
+                  name="cookTime"
+                  control={control}
+                  render={({ field }) => (
+                    <InputField
+                      field={field}
+                      placeholder="Cook Time"
+                      size="regular"
+                    />
+                  )}
+                />
+                <div>Serving</div>
+                <Controller
+                  name="serving"
+                  control={control}
+                  render={({ field }) => (
+                    <InputField
+                      field={field}
+                      placeholder="Serving"
+                      size="regular"
+                    />
+                  )}
+                />
+              </div>
+              <div className="w-full">
+                <div className="space-y-2">
+                  <div>Directions</div>
+                  {fields.map((field, index) => (
+                    <div className="flex gap-2 items-center" key={field.id}>
+                      <Controller
+                        name={`directions[${index}].direction`}
+                        control={control}
+                        defaultValue={field.direction}
+                        render={({ field }) => (
+                          <InputField
+                            field={field}
+                            // sx={{ width: "100%" }}
+                            placeholder={`Item ${index + 1}`}
+                            size="regular"
+                            multiline={true}
+                          />
+                        )}
                       />
-                    )}
-                  />
-                  {/* {isHovered === index && ( */}
-                  <IconButton onClick={() => remove(index)}>
-                    <DeleteIcon size={18} color="blue" />
+                      <IconButton onClick={() => remove(index)}>
+                        <DeleteIcon size={18} color="blue" />
+                      </IconButton>
+                    </div>
+                  ))}
+                  <IconButton onClick={() => append({ direction: "" })}>
+                    <AddIcon size={18} color="blue" />
                   </IconButton>
-                  {/* )} */}
                 </div>
-              ))}
-              <IconButton onClick={() => append({ direction: "" })}>
-                <AddIcon size={18} color="blue" />
-              </IconButton>
-            </div>
-            <Controller
-              name="prepTime"
-              control={control}
-              render={({ field }) => (
-                <InputField
-                  field={field}
-                  placeholder="Prep Time"
-                  size="small"
-                />
-              )}
-            />
-            <Controller
-              name="cookTime"
-              control={control}
-              render={({ field }) => (
-                <InputField
-                  field={field}
-                  placeholder="Prep Time"
-                  size="small"
-                />
-              )}
-            />
-            <Controller
-              name="serving"
-              control={control}
-              render={({ field }) => (
-                <InputField field={field} placeholder="Serving" size="small" />
-              )}
-            />
-            <button type="submit">Update</button>
-            <Link to={"/"}>
-              <button className="w-full" type="button">
-                Cancel
-              </button>
-            </Link>
-          </form>
-        </div>
-      ) : (
-        <div className="flex justify-center items-center h-screen">
-          <Loader />
-        </div>
-      )}
-    </div>
+                <Button type="submit" sx={{ width: "100%" }} size="regular">
+                  Update
+                </Button>
+                <Link to={"/"}>
+                  <Button sx={{ width: "100%" }} color="error" size="regular">
+                    Cancel
+                  </Button>
+                </Link>
+              </div>
+            </form>
+          </div>
+        ) : (
+          <div className="flex justify-center items-center h-screen">
+            <Loader />
+          </div>
+        )}
+      </div>
+
+      <CustomSnackbar
+        message="Update Successful!"
+        severity="success"
+        open={open}
+        handleClose={handleClose}
+      />
+    </>
   );
 };
 
