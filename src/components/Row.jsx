@@ -44,19 +44,17 @@ const Row = ({ data, onClick, onDelete }) => {
       }}
     >
       <TableCell component="th" scope="row">
-        {data.recipe_name}
+        <div>{data.recipe_name}</div>
       </TableCell>
-      <TableCell align="left">{data.desc}</TableCell>
+      <TableCell align="left"><div>{data.desc}</div></TableCell>
       <TableCell align="left">
         {data.ingredients
           .slice(0, (data.ingredients.length = 1))
-          .map((ingredient, index) => {
-            const itemNo = index + 1;
-            const isLast = itemNo === data.ingredients.length;
+          .map((ingredient) => {
             return (
               <div>
                 {ingredient}
-                {isLast ? "" : ","}
+                ...
               </div>
             );
           })}
@@ -84,9 +82,9 @@ const Row = ({ data, onClick, onDelete }) => {
           </button>
         )}
       </TableCell>
-      <TableCell align="left">{data.prep_time}</TableCell>
-      <TableCell align="left">{data.cooking_time}</TableCell>
-      <TableCell align="left">{data.serving}</TableCell>
+      <TableCell align="left"><div>{data.prep_time}</div></TableCell>
+      <TableCell align="left"><div>{data.cooking_time}</div></TableCell>
+      <TableCell align="left"><div>{data.serving}</div></TableCell>
       <TableCell align="left">
         <div className="inline-flex">
           <Link to={`/recipes/edit/${data.slug}`}>

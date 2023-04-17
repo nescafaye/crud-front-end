@@ -15,7 +15,6 @@ import {
   Button,
 } from "@mui/material";
 import { HiPlus as AddIcon } from "react-icons/hi";
-
 import { useEffect, useState } from "react";
 
 import axios from "axios";
@@ -35,6 +34,7 @@ const Recipes = () => {
 
   const getRecipe = async () => {
     const result = await axios.get(`${API_BASE_URL}/all`);
+    console.log(result.data);
     setRecipes(result.data);
   };
 
@@ -76,18 +76,23 @@ const Recipes = () => {
             </Link>
           </div>
         </div>
-        <TableContainer component={Paper} elevation={0}>
+        <TableContainer
+          component={Paper}
+          elevation={0}
+          sx={{ bgcolor: "transparent" }}
+        >
           <Table
             sx={{
               minWidth: "650px",
               bgcolor: "#191925",
+              borderRadius: "12px",
               "th, td": { borderColor: "#424248" },
             }}
             aria-label="simple table"
           >
             <TableHead>
               <TableRow sx={{ th: { fontWeight: "bold", color: "white" } }}>
-                <TableCell>Recipe Name</TableCell>
+                <TableCell><div>Recipe Name</div></TableCell>
                 <TableCell align="left">Description</TableCell>
                 <TableCell align="left">Ingredients</TableCell>
                 <TableCell align="left">Directions</TableCell>
@@ -110,8 +115,7 @@ const Recipes = () => {
                       }}
                     />
                   ))
-                : 
-                  ""}
+                : ""}
             </TableBody>
           </Table>
         </TableContainer>

@@ -15,7 +15,12 @@ const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const CreateRecipe = () => {
   const navigate = useNavigate();
-  const { control, handleSubmit } = useForm({
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       recipeName: "",
       desc: "",
@@ -64,7 +69,7 @@ const CreateRecipe = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-12">
       <div className="mb-12 text-xl font-semibold">Create Recipe</div>
       <form
         className="flex flex-col lg:flex-row flex-wrap gap-4"
@@ -75,18 +80,25 @@ const CreateRecipe = () => {
           <Controller
             name="recipeName"
             control={control}
+            rules={{ required: true }}
             render={({ field }) => (
-              <InputField
-                field={field}
-                placeholder="Recipe Name"
-                size="regular"
-              />
+              <>
+                <InputField
+                  field={field}
+                  placeholder="Recipe Name"
+                  size="regular"
+                  error={errors.recipeName}
+                  fieldName="recipe name"
+                />
+               
+              </>
             )}
           />
           <div>Description</div>
           <Controller
             name="desc"
             control={control}
+            rules={{ required: true }}
             render={({ field }) => (
               <InputField
                 field={field}
@@ -94,6 +106,7 @@ const CreateRecipe = () => {
                 size="regular"
                 multiline={true}
                 rows={5}
+                error={errors.desc}
               />
             )}
           />
@@ -101,11 +114,13 @@ const CreateRecipe = () => {
           <Controller
             name="prepTime"
             control={control}
+            rules={{ required: true }}
             render={({ field }) => (
               <InputField
                 field={field}
                 placeholder="Prep Time"
                 size="regular"
+                error={errors.prepTime}
               />
             )}
           />
@@ -115,6 +130,7 @@ const CreateRecipe = () => {
           <Controller
             name="ingredients"
             control={control}
+            rules={{ required: true }}
             render={({ field }) => (
               <InputField
                 field={field}
@@ -122,6 +138,7 @@ const CreateRecipe = () => {
                 size="regular"
                 multiline={true}
                 rows={5}
+                error={errors.ingredients}
               />
             )}
           />
@@ -129,11 +146,13 @@ const CreateRecipe = () => {
           <Controller
             name="cookTime"
             control={control}
+            rules={{ required: true }}
             render={({ field }) => (
               <InputField
                 field={field}
                 placeholder="Cook Time"
                 size="regular"
+                error={errors.cookTime}
               />
             )}
           />
@@ -141,8 +160,9 @@ const CreateRecipe = () => {
           <Controller
             name="serving"
             control={control}
+            rules={{ required: true }}
             render={({ field }) => (
-              <InputField field={field} placeholder="Serving" size="regular" />
+              <InputField field={field} placeholder="Serving" size="regular" error={errors.serving}/>
             )}
           />
         </div>
@@ -150,24 +170,28 @@ const CreateRecipe = () => {
           <div className="space-y-2">
             <div>Directions</div>
             {fields.map((field, index) => (
-              <div className="flex gap-2 items-center" key={field.id}>
-                <Controller
-                  name={`directions[${index}].direction`}
-                  control={control}
-                  defaultValue={field.direction}
-                  render={({ field }) => (
-                    <InputField
-                      field={field}
-                      // sx={{ width: "100%" }}
-                      placeholder={`Item ${index + 1}`}
-                      size="regular"
-                      multiline={true}
-                    />
-                  )}
-                />
-                <IconButton onClick={() => remove(index)}>
-                  <DeleteIcon size={18} color="blue" />
-                </IconButton>
+              <div className="flex gap-1" key={field.id}>
+                  <Controller
+                    name={`directions[${index}].direction`}
+                    control={control}
+                    rules={{ required: true }}
+                    defaultValue={field.direction}
+                    render={({ field }) => (
+                      <InputField
+                        field={field}
+                        // sx={{ width: "100%" }}
+                        placeholder={`Item ${index + 1}`}
+                        size="regular"
+                        multiline={true}
+                        error={errors.directions}
+                      />
+                    )}
+                  />
+                <div className="relative top-2.5">
+                  <IconButton onClick={() => remove(index)}>
+                    <DeleteIcon size={18} color="blue" />
+                  </IconButton>
+                </div>
               </div>
             ))}
             <IconButton onClick={() => append({ direction: "" })}>

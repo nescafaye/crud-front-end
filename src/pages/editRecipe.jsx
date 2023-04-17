@@ -64,7 +64,7 @@ const EditRecipe = () => {
     fetchRecipe();
   }, [slug]);
 
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit, formState: { errors } } = useForm({
     values: {
       recipeName: selectedRecipe ? selectedRecipe.recipe_name : "",
       desc: selectedRecipe ? selectedRecipe.desc : "",
@@ -93,7 +93,7 @@ const EditRecipe = () => {
 
   return (
     <>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-12">
         <div className="mb-12 text-xl font-semibold">Edit Recipe</div>
         {selectedRecipe ? (
           <div>
@@ -106,11 +106,13 @@ const EditRecipe = () => {
                 <Controller
                   name="recipeName"
                   control={control}
+                  rules={{ required: true }}
                   render={({ field }) => (
                     <InputField
                       field={field}
                       placeholder="Recipe Name"
                       size="regular"
+                      error={errors.recipeName}
                     />
                   )}
                 />
@@ -118,6 +120,7 @@ const EditRecipe = () => {
                 <Controller
                   name="desc"
                   control={control}
+                  rules={{ required: true }}
                   render={({ field }) => (
                     <InputField
                       field={field}
@@ -125,6 +128,7 @@ const EditRecipe = () => {
                       size="regular"
                       multiline={true}
                       rows={5}
+                      error={errors.desc}
                     />
                   )}
                 />
@@ -132,11 +136,13 @@ const EditRecipe = () => {
                 <Controller
                   name="prepTime"
                   control={control}
+                  rules={{ required: true }}
                   render={({ field }) => (
                     <InputField
                       field={field}
                       placeholder="Prep Time"
                       size="regular"
+                      error={errors.prepTime}
                     />
                   )}
                 />
@@ -146,6 +152,7 @@ const EditRecipe = () => {
                 <Controller
                   name="ingredients"
                   control={control}
+                  rules={{ required: true }}
                   render={({ field }) => (
                     <InputField
                       field={field}
@@ -153,6 +160,7 @@ const EditRecipe = () => {
                       size="regular"
                       multiline={true}
                       rows={5}
+                      error={errors.ingredients}
                     />
                   )}
                 />
@@ -160,11 +168,13 @@ const EditRecipe = () => {
                 <Controller
                   name="cookTime"
                   control={control}
+                  rules={{ required: true }}
                   render={({ field }) => (
                     <InputField
                       field={field}
                       placeholder="Cook Time"
                       size="regular"
+                      error={errors.cookTime}
                     />
                   )}
                 />
@@ -172,11 +182,13 @@ const EditRecipe = () => {
                 <Controller
                   name="serving"
                   control={control}
+                  rules={{ required: true }}
                   render={({ field }) => (
                     <InputField
                       field={field}
                       placeholder="Serving"
                       size="regular"
+                      error={errors.serving}
                     />
                   )}
                 />
@@ -189,6 +201,7 @@ const EditRecipe = () => {
                       <Controller
                         name={`directions[${index}].direction`}
                         control={control}
+                        rules={{ required: true }}
                         defaultValue={field.direction}
                         render={({ field }) => (
                           <InputField
@@ -197,6 +210,7 @@ const EditRecipe = () => {
                             placeholder={`Item ${index + 1}`}
                             size="regular"
                             multiline={true}
+                            error={errors.directions}
                           />
                         )}
                       />
@@ -205,7 +219,7 @@ const EditRecipe = () => {
                       </IconButton>
                     </div>
                   ))}
-                  <IconButton onClick={() => append({ direction: "" })}>
+                  <IconButton sx={{float: "right"}} onClick={() => append({ direction: "" })}>
                     <AddIcon size={18} color="blue" />
                   </IconButton>
                 </div>
