@@ -52,9 +52,8 @@ const Row = ({ data, onClick, onDelete }) => {
           .slice(0, (data.ingredients.length = 1))
           .map((ingredient) => {
             return (
-              <div>
+              <div className="text-ellipsis overflow-hidden whitespace-nowrap w-48">
                 {ingredient}
-                ...
               </div>
             );
           })}

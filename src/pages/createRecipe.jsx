@@ -194,7 +194,7 @@ const CreateRecipe = () => {
                 </div>
               </div>
             ))}
-            <IconButton onClick={() => append({ direction: "" })}>
+            <IconButton sx={{float: "right"}} onClick={() => append({ direction: "" })}>
               <AddIcon size={18} color="blue" />
             </IconButton>
           </div>
