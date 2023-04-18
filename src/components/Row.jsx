@@ -19,13 +19,6 @@ const Row = ({ data, onClick, onDelete }) => {
     setIsLoading(false);
   }, []);
 
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   return isLoading ? (
     <TableRow>
@@ -52,7 +45,7 @@ const Row = ({ data, onClick, onDelete }) => {
           .slice(0, (data.ingredients.length = 1))
           .map((ingredient) => {
             return (
-              <div className="text-ellipsis overflow-hidden whitespace-nowrap w-48">
+              <div className="text-ellipsis overflow-hidden whitespace-nowrap w-36">
                 {ingredient}
               </div>
             );
@@ -84,6 +77,7 @@ const Row = ({ data, onClick, onDelete }) => {
       <TableCell align="left"><div>{data.prep_time}</div></TableCell>
       <TableCell align="left"><div>{data.cooking_time}</div></TableCell>
       <TableCell align="left"><div>{data.serving}</div></TableCell>
+      <TableCell align="left"><div>{data.recipe_image}</div></TableCell>
       <TableCell align="left">
         <div className="inline-flex">
           <Link to={`/recipes/edit/${data.slug}`}>

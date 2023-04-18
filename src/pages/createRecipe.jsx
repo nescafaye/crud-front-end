@@ -4,10 +4,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 
 import { Button, IconButton } from "@mui/material";
+
 import axios from "axios";
 import slugify from "slugify";
 
-import { HiPlus as AddIcon, HiX as DeleteIcon } from "react-icons/hi";
+import { HiPlus as AddIcon, HiX as DeleteIcon, HiCloudUpload as UploadIcon } from "react-icons/hi";
 
 import InputField from "../components/InputField";
 
@@ -29,6 +30,7 @@ const CreateRecipe = () => {
       prepTime: "",
       cookTime: "",
       serving: "",
+      recipeImage: "",
     },
   });
 
@@ -50,6 +52,7 @@ const CreateRecipe = () => {
         prepTime: data.prepTime,
         cookingTime: data.cookTime,
         serving: data.serving,
+        recipeImage: data.recipeImage,
         slug: slug,
       };
       const result = await axios.post(`${API_BASE_URL}/create`, newRecipe);
@@ -168,6 +171,18 @@ const CreateRecipe = () => {
         </div>
         <div className="w-full">
           <div className="space-y-2">
+            <div>Image</div>
+            <Button
+              variant="outlined"
+              startIcon={<UploadIcon/>}
+              component="label"
+            >
+              Upload File
+              <input
+                type="file"
+                hidden
+              />
+            </Button>       
             <div>Directions</div>
             {fields.map((field, index) => (
               <div className="flex gap-1" key={field.id}>

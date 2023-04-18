@@ -36,6 +36,8 @@ const ViewRecipe = () => {
           <div>{selectedRecipe.prep_time}</div>
           <div>{selectedRecipe.cooking_time}</div>
           <div>{selectedRecipe.serving}</div>
+          <div>{selectedRecipe.recipe_image}</div>
+          <div>{selectedRecipe.slug}</div>
         </div>
       ) : (
         <div className="flex justify-center items-center h-screen">

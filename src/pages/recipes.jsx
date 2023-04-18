@@ -99,6 +99,7 @@ const Recipes = () => {
                 <TableCell align="left">Prep Time</TableCell>
                 <TableCell align="left">Cook Time</TableCell>
                 <TableCell align="left">Serving</TableCell>
+                <TableCell align="left">Image</TableCell>
                 <TableCell align="left">Actions</TableCell>
               </TableRow>
             </TableHead>
