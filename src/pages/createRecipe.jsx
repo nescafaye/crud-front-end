@@ -21,6 +21,7 @@ const CreateRecipe = () => {
     control,
     handleSubmit,
     formState: { errors },
+    register,
   } = useForm({
     defaultValues: {
       recipeName: "",
@@ -65,6 +66,7 @@ const CreateRecipe = () => {
 
   const onSubmit = (data) => {
     try {
+      // console.log(data.recipeImage);
       createRecipe(data);
     } catch (error) {
       console.error(error);
@@ -93,7 +95,6 @@ const CreateRecipe = () => {
                   error={errors.recipeName}
                   fieldName="recipe name"
                 />
-               
               </>
             )}
           />
@@ -165,7 +166,12 @@ const CreateRecipe = () => {
             control={control}
             rules={{ required: true }}
             render={({ field }) => (
-              <InputField field={field} placeholder="Serving" size="regular" error={errors.serving}/>
+              <InputField
+                field={field}
+                placeholder="Serving"
+                size="regular"
+                error={errors.serving}
+              />
             )}
           />
         </div>
@@ -174,34 +180,39 @@ const CreateRecipe = () => {
             <div>Image</div>
             <Button
               variant="outlined"
-              startIcon={<UploadIcon/>}
+              startIcon={<UploadIcon />}
               component="label"
+              size="large"
             >
-              Upload File
               <input
                 type="file"
-                hidden
+                name="recipeImage"
+                required
+                // onChange={(e) => {
+                //   // register("recipeImage");
+                //   // setValue("recipeImage", e.target.files[0]);
+                // }}
               />
-            </Button>       
+            </Button>
             <div>Directions</div>
             {fields.map((field, index) => (
               <div className="flex gap-1" key={field.id}>
-                  <Controller
-                    name={`directions[${index}].direction`}
-                    control={control}
-                    rules={{ required: true }}
-                    defaultValue={field.direction}
-                    render={({ field }) => (
-                      <InputField
-                        field={field}
-                        // sx={{ width: "100%" }}
-                        placeholder={`Item ${index + 1}`}
-                        size="regular"
-                        multiline={true}
-                        error={errors.directions}
-                      />
-                    )}
-                  />
+                <Controller
+                  name={`directions[${index}].direction`}
+                  control={control}
+                  rules={{ required: true }}
+                  defaultValue={field.direction}
+                  render={({ field }) => (
+                    <InputField
+                      field={field}
+                      // sx={{ width: "100%" }}
+                      placeholder={`Item ${index + 1}`}
+                      size="regular"
+                      multiline={true}
+                      error={errors.directions}
+                    />
+                  )}
+                />
                 <div className="relative top-2.5">
                   <IconButton onClick={() => remove(index)}>
                     <DeleteIcon size={18} color="blue" />
@@ -209,7 +220,10 @@ const CreateRecipe = () => {
                 </div>
               </div>
             ))}
-            <IconButton sx={{float: "right"}} onClick={() => append({ direction: "" })}>
+            <IconButton
+              sx={{ float: "right" }}
+              onClick={() => append({ direction: "" })}
+            >
               <AddIcon size={18} color="blue" />
             </IconButton>
           </div>

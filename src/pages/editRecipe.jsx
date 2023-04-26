@@ -47,6 +47,7 @@ const EditRecipe = () => {
       prep_time: data.prepTime,
       cooking_time: data.cookTime,
       serving: data.serving,
+      recipe_image: data.recipeImage,
     };
     try {
       const result = await axios.patch(
@@ -75,6 +76,7 @@ const EditRecipe = () => {
       prepTime: selectedRecipe ? selectedRecipe.prep_time : "",
       cookTime: selectedRecipe ? selectedRecipe.cooking_time : "",
       serving: selectedRecipe ? selectedRecipe.serving : "",
+      recipeImage: selectedRecipe ? selectedRecipe.recipe_image : "",
     },
   });
 

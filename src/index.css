@@ -43,4 +43,12 @@ body {
   ::-webkit-scrollbar-thumb:hover {
     background: #676770; 
   }
+
+  ::-webkit-file-upload-button {
+    display: none;
+ }
+
+ ::file-selector-button {
+  display: none;
+}
   
